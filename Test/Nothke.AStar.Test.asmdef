@@ -1,0 +1,15 @@
+{
+    "name": "Nothke.AStar.Test",
+    "references": [
+        "GUID:9c317a830db543a4dbdc25de64c182ab"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
