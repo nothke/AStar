@@ -154,7 +154,7 @@ namespace Nothke.AStar
             return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
         }
 
-        public void Search(WeightedGraph<Vector2Int> graph, Vector2Int start, Vector2Int goal)
+        public void Search(WeightedGraph<Vector2Int> graph, Vector2Int start, Vector2Int goal, bool preferForward = false)
         {
             Profiler.BeginSample("AStar Search");
 
@@ -177,20 +177,23 @@ namespace Nothke.AStar
 
                 graph.NeighborsNonAlloc(ref neighbors, current);
 
-                // Prefer going forward
-                Vector2Int last = cameFrom[current];
-                Vector2Int nextInDir = 2 * current - last;
-
-                for (int i = 0; i < neighbors.Count; i++)
+                if (preferForward)
                 {
-                    if (neighbors[i] == nextInDir)
-                    {
-                        if (i == 0) break;
+                    // Prefer going forward
+                    Vector2Int last = cameFrom[current];
+                    Vector2Int nextInDir = 2 * current - last;
 
-                        var temp = neighbors[0];
-                        neighbors[0] = neighbors[i];
-                        neighbors[i] = temp;
-                        break;
+                    for (int i = 0; i < neighbors.Count; i++)
+                    {
+                        if (neighbors[i] == nextInDir)
+                        {
+                            if (i == 0) break;
+
+                            var temp = neighbors[0];
+                            neighbors[0] = neighbors[i];
+                            neighbors[i] = temp;
+                            break;
+                        }
                     }
                 }
 
