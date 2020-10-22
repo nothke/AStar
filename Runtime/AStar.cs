@@ -225,6 +225,27 @@ namespace Nothke.AStar
             cameFrom = new Dictionary<Vector2Int, Vector2Int>(totalGridSize);
             costSoFar = new Dictionary<Vector2Int, double>(totalGridSize);
         }
+
+        public void FillPath(ref List<Vector2Int> list, Vector2Int start, Vector2Int goal)
+        {
+            Vector2Int current = goal;
+            Vector2Int ptr;
+            int c = 0;
+            while (cameFrom.TryGetValue(current, out ptr) && current != start)
+            {
+                list.Add(ptr);
+                current = ptr;
+
+                c++;
+                if (c > 1000)
+                {
+                    Debug.LogError("INFINITE LOOP");
+                    break;
+                }
+            }
+
+            list.Reverse();
+        }
     }
 }
 
