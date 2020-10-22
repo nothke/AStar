@@ -10,7 +10,7 @@ namespace Nothke.AStar
     public interface WeightedGraph<L>
     {
         double Cost(L a, L b);
-        void NeighborsNonAlloc(ref List<L> list, L id);
+        void FillNeighbors(ref List<L> list, L id);
         int TotalSize { get; }
     }
 
@@ -69,7 +69,7 @@ namespace Nothke.AStar
             return forests.Contains(b) ? 5 : 1;
         }
 
-        public void NeighborsNonAlloc(ref List<Vector2Int> list, Vector2Int id)
+        public void FillNeighbors(ref List<Vector2Int> list, Vector2Int id)
         {
             list.Clear();
 
@@ -98,10 +98,7 @@ namespace Nothke.AStar
 
         private List<(T, double)> elements = new List<(T, double)>();
 
-        public int Count
-        {
-            get { return elements.Count; }
-        }
+        public int Count => elements.Count;
 
         public void Enqueue(T item, double priority)
         {
@@ -167,7 +164,6 @@ namespace Nothke.AStar
             cameFrom[start] = start;
             costSoFar[start] = 0;
 
-            //Vector2Int last = start;
             while (frontier.Count > 0)
             {
                 var current = frontier.Dequeue();
@@ -175,7 +171,7 @@ namespace Nothke.AStar
                 if (current.Equals(goal))
                     break;
 
-                graph.NeighborsNonAlloc(ref neighbors, current);
+                graph.FillNeighbors(ref neighbors, current);
 
                 if (preferForward)
                 {
