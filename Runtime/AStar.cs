@@ -2,26 +2,32 @@
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.Profiling;
+using System;
 
 namespace Nothke.AStar
 {
     // A* needs only a WeightedGraph and a Vector2Int type L, and does *not*
     // have to be a grid. However, in the example code I am using a grid.
-    public interface WeightedGraph<L>
+
+    /// <summary>
+    /// A WeightedGraph used for A* pathfinding.
+    /// F is used for cost comparison, usually a float or double.
+    /// </summary>
+    public interface WeightedGraph<L, F> where F : IComparable<F>
     {
-        double Cost(L a, L b);
+        F Cost(L a, L b);
         void FillNeighbors(ref List<L> list, L id);
         int TotalSize { get; }
     }
 
-    public class SquareGrid : WeightedGraph<Vector2Int>
+    public class SquareGrid : WeightedGraph<Vector2Int, double>
     {
         // Implementation notes: I made the fields public for convenience,
         // but in a real project you'll probably want to follow standard
         // style and make them private.
 
         public readonly Vector2Int[] DIRS = new[]
-            {
+        {
             new Vector2Int(1, 0),
             new Vector2Int(0, -1),
             new Vector2Int(-1, 0),
@@ -151,7 +157,7 @@ namespace Nothke.AStar
             return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
         }
 
-        public void Search(WeightedGraph<Vector2Int> graph, Vector2Int start, Vector2Int goal, bool preferForward = false)
+        public void Search(WeightedGraph<Vector2Int, double> graph, Vector2Int start, Vector2Int goal, bool preferForward = false)
         {
             Profiler.BeginSample("AStar Search");
 
@@ -213,7 +219,7 @@ namespace Nothke.AStar
             Profiler.EndSample();
         }
 
-        public AStar(WeightedGraph<Vector2Int> graph)
+        public AStar(WeightedGraph<Vector2Int, double> graph)
         {
             ResetSize(graph.TotalSize);
             frontier = new PriorityQueue<Vector2Int>();
