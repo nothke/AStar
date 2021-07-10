@@ -107,6 +107,12 @@ namespace Nothke.AStar
 
         public int Count => elements.Count;
 
+        public PriorityQueue(int capacity = 0)
+        {
+            elements = new List<TElement>(capacity);
+            priorities = new List<TPriority>(capacity);
+        }
+
         public void Enqueue(TElement item, TPriority priority)
         {
             elements.Add(item);
