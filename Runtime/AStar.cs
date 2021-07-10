@@ -90,40 +90,45 @@ namespace Nothke.AStar
         }
     }
 
+    // I'm using an unsorted array for this example, but ideally this
+    // would be a binary heap. There's an open issue for adding a binary
+    // heap to the standard C# library: https://github.com/dotnet/corefx/issues/574
+    //
+    // Until then, find a binary heap class:
+    // * https://github.com/BlueRaja/High-Speed-Priority-Queue-for-C-Sharp
+    // * http://visualstudiomagazine.com/articles/2012/11/01/priority-queues-with-c.aspx
+    // * http://xfleury.github.io/graphsearch.html
+    // * http://stackoverflow.com/questions/102398/priority-queue-in-net
+
     public class PriorityQueue<TElement, TPriority> where TPriority : IComparable<TPriority>
     {
-        // I'm using an unsorted array for this example, but ideally this
-        // would be a binary heap. There's an open issue for adding a binary
-        // heap to the standard C# library: https://github.com/dotnet/corefx/issues/574
-        //
-        // Until then, find a binary heap class:
-        // * https://github.com/BlueRaja/High-Speed-Priority-Queue-for-C-Sharp
-        // * http://visualstudiomagazine.com/articles/2012/11/01/priority-queues-with-c.aspx
-        // * http://xfleury.github.io/graphsearch.html
-        // * http://stackoverflow.com/questions/102398/priority-queue-in-net
-
-        private List<(TElement, TPriority)> elements = new List<(TElement, TPriority)>();
+        private List<TElement> elements;
+        private List<TPriority> priorities;
 
         public int Count => elements.Count;
 
         public void Enqueue(TElement item, TPriority priority)
         {
-            elements.Add((item, priority));
+            elements.Add(item);
+            priorities.Add(priority);
         }
 
         public TElement Dequeue()
         {
             int bestIndex = 0;
 
-            for (int i = 0; i < elements.Count; i++)
+            int ct = elements.Count;
+            TPriority bestPriority = priorities[bestIndex];
+            for (int i = 0; i < ct; i++)
             {
-                if (elements[i].Item2.CompareTo(elements[bestIndex].Item2) < 1)
+                if (priorities[i].CompareTo(bestPriority) < 0)
                 {
                     bestIndex = i;
+                    bestPriority = priorities[bestIndex];
                 }
             }
 
-            TElement bestItem = elements[bestIndex].Item1;
+            TElement bestItem = elements[bestIndex];
             elements.RemoveAt(bestIndex);
             return bestItem;
         }
