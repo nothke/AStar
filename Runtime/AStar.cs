@@ -11,12 +11,12 @@ namespace Nothke.AStar
 
     /// <summary>
     /// A WeightedGraph used for A* pathfinding.
-    /// F is used for cost comparison, usually a float or double.
+    /// TCost is used for cost comparison, usually a float or double.
     /// </summary>
-    public interface WeightedGraph<L, F> where F : IComparable<F>
+    public interface WeightedGraph<TElement, TCost> where TCost : IComparable<TCost>
     {
-        F Cost(L a, L b);
-        void FillNeighbors(ref List<L> list, L id);
+        TCost Cost(TElement a, TElement b);
+        void FillNeighbors(ref List<TElement> list, TElement id);
         int TotalSize { get; }
     }
 
@@ -90,7 +90,7 @@ namespace Nothke.AStar
         }
     }
 
-    public class PriorityQueue<T>
+    public class PriorityQueue<TElement, TPriority> where TPriority : IComparable<TPriority>
     {
         // I'm using an unsorted array for this example, but ideally this
         // would be a binary heap. There's an open issue for adding a binary
@@ -102,28 +102,28 @@ namespace Nothke.AStar
         // * http://xfleury.github.io/graphsearch.html
         // * http://stackoverflow.com/questions/102398/priority-queue-in-net
 
-        private List<(T, double)> elements = new List<(T, double)>();
+        private List<(TElement, TPriority)> elements = new List<(TElement, TPriority)>();
 
         public int Count => elements.Count;
 
-        public void Enqueue(T item, double priority)
+        public void Enqueue(TElement item, TPriority priority)
         {
             elements.Add((item, priority));
         }
 
-        public T Dequeue()
+        public TElement Dequeue()
         {
             int bestIndex = 0;
 
             for (int i = 0; i < elements.Count; i++)
             {
-                if (elements[i].Item2 < elements[bestIndex].Item2)
+                if (elements[i].Item2.CompareTo(elements[bestIndex].Item2) < 1)
                 {
                     bestIndex = i;
                 }
             }
 
-            T bestItem = elements[bestIndex].Item1;
+            TElement bestItem = elements[bestIndex].Item1;
             elements.RemoveAt(bestIndex);
             return bestItem;
         }
@@ -146,7 +146,7 @@ namespace Nothke.AStar
     {
         public Dictionary<Vector2Int, Vector2Int> cameFrom;
         public Dictionary<Vector2Int, double> costSoFar;
-        PriorityQueue<Vector2Int> frontier;
+        PriorityQueue<Vector2Int, double> frontier;
         List<Vector2Int> neighbors;
 
         // Note: a generic version of A* would abstract over Vector2Int and
@@ -222,7 +222,7 @@ namespace Nothke.AStar
         public AStar(WeightedGraph<Vector2Int, double> graph)
         {
             ResetSize(graph.TotalSize);
-            frontier = new PriorityQueue<Vector2Int>();
+            frontier = new PriorityQueue<Vector2Int, double>();
             neighbors = new List<Vector2Int>(4);
         }
 
