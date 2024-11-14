@@ -102,6 +102,8 @@ namespace Nothke.AStar
 
     public class PriorityQueue<TElement, TPriority> where TPriority : IComparable<TPriority>
     {
+        float d;
+
         private List<TElement> elements;
         private List<TPriority> priorities;
 
@@ -135,13 +137,17 @@ namespace Nothke.AStar
             }
 
             TElement bestItem = elements[bestIndex];
+
             elements.RemoveAt(bestIndex);
+            priorities.RemoveAt(bestIndex);
+
             return bestItem;
         }
 
         public void Clear()
         {
             elements.Clear();
+            priorities.Clear();
         }
     }
 
